@@ -1,0 +1,31 @@
+{
+  "name": "gql-query-criteria",
+  "version": "0.0.1",
+  "author": "dbwcooper",
+  "packageManager": "bun@1.0.2",
+  "description": "converting an criteria into a gql string",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./out/index.js",
+      "require": "./out/index.js"
+    }
+  },
+  "main": "./out/index.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "criteria",
+    "gql",
+    "query"
+  ],
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
