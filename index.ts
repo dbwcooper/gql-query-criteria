@@ -1,5 +1,4 @@
 export enum OPERATOR {
-
   /**
    * 交集
    */
@@ -8,20 +7,27 @@ export enum OPERATOR {
   /**
    * 并集
    */
-  OR = "OR"
+  OR = "OR",
 }
 
-type ObjectCreiteria = {
+type ObjectCriteria = {
   operator?: keyof typeof OPERATOR;
-  [key: string]: Criteria | Criteria[] | string | number | boolean | null | undefined | number[];
+  [key: string]:
+    | Criteria
+    | Criteria[]
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | number[];
 };
 
-export type Criteria = string | Criteria[] | ObjectCreiteria
-
+export type Criteria = undefined | null | string | ObjectCriteria | Criteria[];
 
 /**
  * Converts an array of strings into a string representation with each element enclosed in single quotes and separated by commas.
- * 
+ *
  * @example
  *  ```ts
  *  // Prints "('1', '2', '3')"
@@ -31,85 +37,71 @@ export type Criteria = string | Criteria[] | ObjectCreiteria
  * @returns The string representation of the array.
  */
 function convertArrayToQuotedString(arr: string[]): string {
-  return `(${arr.map((item) => `'${item}'`).join(', ')})`;
+  return `(${arr.map((item) => `'${item}'`).join(", ")})`;
 }
-
 
 /**
  * Removes leading and trailing spaces, replaces multiple spaces with a single space,
  * removes spaces and newlines after opening parentheses, and removes spaces and newlines
  * before closing parentheses.
- * 
+ *
  * @param str - The input string.
  * @returns The normalized string.
  */
 function normalizeString(str: string): string {
   // return str.trim().replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')');
-  return str.trim().replace(/\s+/g, ' ').replace(/(\()\s+|\s+(\))/g, '$1$2');
+  return str
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/(\()\s+|\s+(\))/g, "$1$2");
 }
 
 /**
- * Adds two numbers together.
- * @example
- * Here's a simple example:
- * ```
- * // Prints "2":
- * console.log(add(1,1));
- * ```
- * @example
- * Here's an example with negative numbers:
- * ```
- * // Prints "0":
- * console.log(add(1,-1));
- * ```
+ * Returns the operator based on the given criteria.
+ *
+ * @param {Criteria} operator - The criteria to determine the operator.
+ * @return {OPERATOR} The resulting operator.
  */
+function getOperator(operator: Criteria): OPERATOR {
+  return operator === OPERATOR.OR ? OPERATOR.OR : OPERATOR.AND;
+}
 
 /**
  * Converts an array of criteria into a string representation.
  * @param criterias - The array of criterias to convert.
- * @param defaultOperator - The default operator to use between criterias.
  * @returns The converted criteria string.
  * 
  * @example
  * combine string criterias
  * ```
  * const criterias = [` id='1'`,`  name='张三' `]
- * // Prints "(id='1') AND (name='张三')":
- * convertCriteriaToString(criterias)
+ * // Prints "((id='1') AND (name='张三'))":
+ * formatCriteriaToString(criterias)
  * ```
  * 
  * @example
  * combine complex criterias
  * ```
- * const criterias: Criteria = [
-      ` id='1'`,
-      {
-        operator: 'OR',
-        code: ['1', '2', '3'],
-        'select age from Person where code': ['1', '2'],
-      }
-    ]
- * // Prints "(id='1') AND ((code in ('1', '2', '3')) OR (select age from Person where code in ('1', '2')))":
- * convertCriteriaToString(criterias)
+ *  const criterias = [
+      `id='1'`,
+      null,
+      `name='张三'`,
+      [`age='1'`, `address='1'`],
+    ];
+ * // Prints "((id='1') AND (name='张三') AND ((age='1') AND (address='1')))":
  * ```
- * 
+ * formatCriteriaToString
  */
-export function formatCriteriaToString(
-  criterias: Criteria,
-  defaultOperator: string = OPERATOR.AND
-): string {
+
+export function formatCriteriaToString(criterias: Criteria): string {
   if (!Array.isArray(criterias) || !criterias.length) {
-    return '';
+    return "";
   }
 
-  function makeNestedCriteria(criteria: Criteria): string {
-    return formatCriteriaToString(criteria, defaultOperator);
-  }
-
-  function makeObjectCritera(criteria: ObjectCreiteria): string {
-    const operator = typeof criteria.operator === 'string' ? criteria.operator : OPERATOR.AND;
+  function makeObjectCritera(criteria: ObjectCriteria): string {
+    const operator = getOperator(criteria.operator);
     const nextCriterias = Object.entries(criteria)
-      .filter(([key]) => key !== 'operator')
+      .filter(([key]) => key !== "operator")
       .map(([key, value]) => {
         if (Array.isArray(value)) {
           return `${key} in ${convertArrayToQuotedString(value as string[])}`;
@@ -117,31 +109,38 @@ export function formatCriteriaToString(
         if (value !== undefined && value !== null) {
           return `${key}='${value}'`;
         }
-        return '';
+        return "";
       });
-    const nextCriteriasStr = formatCriteriaToString(nextCriterias, operator);
-    return nextCriteriasStr ? `(${nextCriteriasStr})` : '';
+    nextCriterias.unshift(operator);
+    const nextCriteriasStr = formatCriteriaToString(nextCriterias);
+    return nextCriteriasStr ? `(${nextCriteriasStr})` : "";
   }
 
-  function makeStringCriteria(criteria: string): string {
-    return `(${normalizeString(criteria)})`;
+  function makeStringCriteria(criteria: string): string | null {
+    return criteria.trim().length > 0 ? `(${normalizeString(criteria)})` : null;
   }
 
-  return criterias
+  const operator = getOperator(criterias[0]);
+  const criteriaString = criterias
     .map((criteria) => {
+      // 过滤操作符
+      if (criteria === OPERATOR.AND || criteria === OPERATOR.OR) return false;
+
       if (Array.isArray(criteria)) {
-        return makeNestedCriteria(criteria);
+        return formatCriteriaToString(criteria);
       }
 
-      if (typeof criteria === 'object' && criteria !== null) {
+      if (typeof criteria === "object" && criteria !== null) {
         return makeObjectCritera(criteria);
       }
 
-      if (typeof criteria === 'string' && criteria.trim().length > 0) {
+      if (typeof criteria === "string") {
         return makeStringCriteria(criteria);
       }
       return false;
     })
     .filter(Boolean)
-    .join(` ${defaultOperator} `);
+    .join(` ${operator} `);
+
+  return makeStringCriteria(criteriaString) || "";
 }
