@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { formatCriteriaToString } from "../index";
+import { criteriaToString } from "../index";
 import type { Criteria } from "../index";
 
 describe("object cases", () => {
@@ -11,7 +11,7 @@ describe("object cases", () => {
         lang: "zig",
       },
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (((address='1') AND (lang='zig'))))"
     );
   });
@@ -25,7 +25,7 @@ describe("object cases", () => {
         lang: "zig",
       },
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (((address='1') OR (lang='zig'))))"
     );
   });
@@ -39,7 +39,7 @@ describe("object cases", () => {
         "select age from Person where code": ["1", "2"],
       },
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (((code in ('1', '2', '3')) OR (select age from Person where code in ('1', '2')))))"
     );
   });
@@ -47,12 +47,12 @@ describe("object cases", () => {
 
 describe("array cases", () => {
   test("空数组返回空字符串", () => {
-    expect(formatCriteriaToString([])).toBe("");
+    expect(criteriaToString([])).toBe("");
   });
 
   test("字符串数组默认使用 AND 拼接", () => {
     const criterias = [`id='1'`, `name='张三'`];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (name='张三'))"
     );
   });
@@ -64,7 +64,7 @@ describe("array cases", () => {
       `name='张三'`,
       [`age='1'`, `address='1'`],
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (name='张三') AND ((age='1') AND (address='1')))"
     );
   });
@@ -77,14 +77,14 @@ describe("array cases", () => {
         a: [],
       },
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (name='张三') AND (((a in ()))))"
     );
   });
 
   test("数组设置默认操作符 OR 或 AND", () => {
     const criterias = ["OR", "quantity = 0", "productId is null"];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((quantity = 0) OR (productId is null))"
     );
   });
@@ -94,16 +94,17 @@ describe("array cases", () => {
       "OR",
       [
         ["OR", "quantity = 0", "productId is null"],
-        ["abs(originInvoiceAmount) > abs(originRcAmount)"],
+        "abs(originInvoiceAmount) > abs(originRcAmount)",
       ],
       [
+        // 11111
         `quantity != 0`,
         `productId is not null`,
         `abs(invoiceQuantity) > abs(rcQuantity)`,
       ],
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND ((abs(originInvoiceAmount) > abs(originRcAmount)))) OR ((quantity != 0) AND (productId is not null) AND (abs(invoiceQuantity) > abs(rcQuantity))))"
+    expect(criteriaToString(criterias)).toBe(
+      "((((quantity = 0) OR (productId is null)) AND (abs(originInvoiceAmount) > abs(originRcAmount))) OR ((quantity != 0) AND (productId is not null) AND (abs(invoiceQuantity) > abs(rcQuantity))))"
     );
   });
 
@@ -121,7 +122,7 @@ describe("array cases", () => {
   //       ],
   //     },
   //   ];
-  //   expect(formatCriteriaToString(criterias)).toBe(
+  //   expect(criteriaToString(criterias)).toBe(
   //     "(name='张三') AND ((id in (select age from Person where (code in ('1', '2')))))"
   //   );
   // });
@@ -130,7 +131,7 @@ describe("array cases", () => {
 describe("string cases", () => {
   test("剔除数组中字符串首尾空格", () => {
     const criterias = [` id='1'`, `  name='张三' `];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (name='张三'))"
     );
   });
@@ -145,7 +146,7 @@ describe("string cases", () => {
         )
     `,
     ];
-    expect(formatCriteriaToString(criterias)).toBe(
+    expect(criteriaToString(criterias)).toBe(
       "((id='1') AND (name='张三') AND (id in (select age from Person where (code in ('1', '2')))))"
     );
   });
@@ -153,6 +154,6 @@ describe("string cases", () => {
 
 describe("edge cases", () => {
   test("1", () => {
-    expect(formatCriteriaToString([])).toBe("");
+    expect(criteriaToString([])).toBe("");
   });
 });

@@ -76,7 +76,7 @@ function getOperator(operator: Criteria): OPERATOR {
  * ```
  * const criterias = [` id='1'`,`  name='张三' `]
  * // Prints "((id='1') AND (name='张三'))":
- * formatCriteriaToString(criterias)
+ * criteriaToString(criterias)
  * ```
  * 
  * @example
@@ -90,10 +90,10 @@ function getOperator(operator: Criteria): OPERATOR {
     ];
  * // Prints "((id='1') AND (name='张三') AND ((age='1') AND (address='1')))":
  * ```
- * formatCriteriaToString
+ * criteriaToString
  */
 
-export function formatCriteriaToString(criterias: Criteria): string {
+export function criteriaToString(criterias: Criteria): string {
   if (!Array.isArray(criterias) || !criterias.length) {
     return "";
   }
@@ -112,7 +112,7 @@ export function formatCriteriaToString(criterias: Criteria): string {
         return "";
       });
     nextCriterias.unshift(operator);
-    const nextCriteriasStr = formatCriteriaToString(nextCriterias);
+    const nextCriteriasStr = criteriaToString(nextCriterias);
     return nextCriteriasStr ? `(${nextCriteriasStr})` : "";
   }
 
@@ -127,7 +127,7 @@ export function formatCriteriaToString(criterias: Criteria): string {
       if (criteria === OPERATOR.AND || criteria === OPERATOR.OR) return false;
 
       if (Array.isArray(criteria)) {
-        return formatCriteriaToString(criteria);
+        return criteriaToString(criteria);
       }
 
       if (typeof criteria === "object" && criteria !== null) {
