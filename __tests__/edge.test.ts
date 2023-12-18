@@ -84,7 +84,7 @@ describe("替换用例", () => {
         [`isFreeGift = 't'`, "abs(rcQuantity) > 0"],
         [
           "abs(originInvoiceAmount) > 0",
-          "abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0)",
+          "abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0",
         ],
       ],
     ];

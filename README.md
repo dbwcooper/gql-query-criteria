@@ -11,7 +11,7 @@ bun install gql-query-criteria
 ### Usage
 
 ```
-import { formatCriteriaToString } from "gql-query-criteria";
+import { criteriaToString } from "gql-query-criteria";
 
 const criterias = [
   ` id='1'`,
@@ -22,14 +22,14 @@ const criterias = [
   }
 ];
 
-const criteriaString = formatCriteriaToString(criterias);
+const criteriaString = criteriaToString(criterias);
 
 console.log(criteriaString); // Prints "(id='1') AND ((age in ('18', '22')) OR (select id from Person where code in ('101', '102')))"
 ```
 
 ### Step-by-step explanation
 
-The `formatCriteriaToString` function takes an array of criteria and a default operator as arguments. The default operator is used to combine the criteria together if no operator is specified for a particular criterion.
+The `criteriaToString` function takes an array of criteria and a default operator as arguments. The default operator is used to combine the criteria together if no operator is specified for a particular criterion.
 
 The function first checks if the array of criteria is empty or not. If it is, then it returns an empty string.
 
@@ -47,6 +47,6 @@ If the property is a string, then the function simply wraps it in parentheses.
 
 The function then joins all of the string representations of the properties of the object criterion together with the operator.
 
-To convert an array criterion to a string representation, the function simply calls the `formatCriteriaToString` function recursively on the array.
+To convert an array criterion to a string representation, the function simply calls the `criteriaToString` function recursively on the array.
 
 Once all of the criteria have been converted to string representations, the function joins them together with the default operator and returns the resulting string.
