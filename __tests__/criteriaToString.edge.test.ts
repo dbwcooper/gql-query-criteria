@@ -11,7 +11,7 @@ describe("替换用例", () => {
         : `revenueConfirmationStatusId != 'ENUM_RevenueConfirmationStatusEnum_all'`,
     ];
     expect(criteriaToString(criteriaArray)).toBe(
-      "((revenueConfirmationStatusId != '') AND (revenueConfirmationStatusId != 'ENUM_RevenueConfirmationStatusEnum_all'))"
+      "(revenueConfirmationStatusId != '' AND revenueConfirmationStatusId != 'ENUM_RevenueConfirmationStatusEnum_all')"
     );
   });
 
@@ -24,7 +24,7 @@ describe("替换用例", () => {
         : `revenueConfirmationStatusId != 'ENUM_RevenueConfirmationStatusEnum_all'`,
     ];
     expect(criteriaToString(criteriaArray)).toBe(
-      "((revenueConfirmationStatusId != ''))"
+      "(revenueConfirmationStatusId != '')"
     );
   });
 
@@ -39,7 +39,7 @@ describe("替换用例", () => {
     ];
 
     expect(criteriaToString(criteriaArray)).toBe(
-      "(((abs(originRcAmount) > 0) AND (abs(originInvoiceAmount) < abs(originRcAmount))) OR ((isFreeGift = 't') AND (abs(rcQuantity) > abs(invoiceQuantity))))"
+      "((abs(originRcAmount) > 0 AND abs(originInvoiceAmount) < abs(originRcAmount)) OR (isFreeGift = 't' AND abs(rcQuantity) > abs(invoiceQuantity)))"
     );
   });
 
@@ -55,7 +55,7 @@ describe("替换用例", () => {
     ];
 
     expect(criteriaToString(criteriaArray)).toBe(
-      "(((abs(originInvoiceAmount) > 0) AND (abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)> 0)) OR ((isFreeGift = 't') AND (abs(rcQuantity) > 0)))"
+      "((abs(originInvoiceAmount) > 0 AND abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)> 0) OR (isFreeGift = 't' AND abs(rcQuantity) > 0))"
     );
   });
 
@@ -74,7 +74,7 @@ describe("替换用例", () => {
     ];
 
     expect(criteriaToString(criteriaArray)).toBe(
-      "((((abs(originInvoiceAmount)>0) AND (abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0)) OR ((isFreeGift = 't') AND (abs(rcQuantity) > 0))) AND (1))"
+      "(((abs(originInvoiceAmount)>0 AND abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0) OR (isFreeGift = 't' AND abs(rcQuantity) > 0)) AND 1)"
     );
 
     const criteriaArray2 = [
@@ -90,7 +90,7 @@ describe("替换用例", () => {
     ];
 
     expect(criteriaToString(criteriaArray2)).toBe(
-      "((1) AND (((isFreeGift = 't') AND (abs(rcQuantity) > 0)) OR ((abs(originInvoiceAmount) > 0) AND (abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0)))))"
+      "(1 AND ((isFreeGift = 't' AND abs(rcQuantity) > 0) OR (abs(originInvoiceAmount) > 0 AND abs(case when invoiceQuantity=0 then 1 else invoiceQuantity end)>0)))"
     );
   });
 
@@ -107,7 +107,7 @@ describe("替换用例", () => {
       ],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND (abs(originInvoiceAmount) > abs(originRcAmount))) OR (((quantity != 0) AND (productId is not null)) AND (abs(invoiceQuantity) > abs(rcQuantity))))"
+      "(((quantity = 0 OR productId is null) AND abs(originInvoiceAmount) > abs(originRcAmount)) OR ((quantity != 0 AND productId is not null) AND abs(invoiceQuantity) > abs(rcQuantity)))"
     );
   });
 
@@ -123,7 +123,7 @@ describe("替换用例", () => {
       },
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((invoiceStatusId != '') AND (((invoiceStatusId not in ('ENUM_InvoiceStatusEnum_all', 'ENUM_InvoiceStatusEnum_done')))))"
+      "(invoiceStatusId != '' AND ((invoiceStatusId not in ('ENUM_InvoiceStatusEnum_all', 'ENUM_InvoiceStatusEnum_done'))))"
     );
   });
 
@@ -134,7 +134,7 @@ describe("替换用例", () => {
       ["abs(rcQuantity) > 0", "quantity != 0", "productId is not null"],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND (abs(originRcAmount) > 0)) OR ((abs(rcQuantity) > 0) AND (quantity != 0) AND (productId is not null)))"
+      "(((quantity = 0 OR productId is null) AND abs(originRcAmount) > 0) OR (abs(rcQuantity) > 0 AND quantity != 0 AND productId is not null))"
     );
   });
 
@@ -152,7 +152,7 @@ describe("替换用例", () => {
       ],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND (abs(originInvoiceAmount) > abs(originApPaymentAmount))) OR ((quantity != 0) AND (productId is not null) AND (abs(invoiceQuantity) > abs(apPaymentQuantity))))"
+      "(((quantity = 0 OR productId is null) AND abs(originInvoiceAmount) > abs(originApPaymentAmount)) OR (quantity != 0 AND productId is not null AND abs(invoiceQuantity) > abs(apPaymentQuantity)))"
     );
   });
 
@@ -166,7 +166,7 @@ describe("替换用例", () => {
       ["quantity != 0", "productId is not null", "abs(apPaymentQuantity) > 0"],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND (abs(originApPaymentAmount) > 0)) OR ((quantity != 0) AND (productId is not null) AND (abs(apPaymentQuantity) > 0)))"
+      "(((quantity = 0 OR productId is null) AND abs(originApPaymentAmount) > 0) OR (quantity != 0 AND productId is not null AND abs(apPaymentQuantity) > 0))"
     );
   });
 
@@ -191,7 +191,7 @@ describe("替换用例", () => {
     ];
 
     expect(criteriaToString(criterias)).toBe(
-      "((paymentApplicationStatusId != '') AND (paymentStatusId != '') AND ((((paymentApplicationStatusId not in ('ENUM_PaymentApplicationStatusEnum_all', 'ENUM_PaymentApplicationStatusEnum_done')))) AND (((paymentStatusId not in ('ENUM_PaymentStatusEnum_all', 'ENUM_PaymentStatusEnum_done'))))))"
+      "(paymentApplicationStatusId != '' AND paymentStatusId != '' AND (((paymentApplicationStatusId not in ('ENUM_PaymentApplicationStatusEnum_all', 'ENUM_PaymentApplicationStatusEnum_done'))) AND ((paymentStatusId not in ('ENUM_PaymentStatusEnum_all', 'ENUM_PaymentStatusEnum_done')))))"
     );
   });
 });

@@ -12,7 +12,7 @@ describe("object cases", () => {
       },
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (((address='1') AND (lang='zig'))))"
+      "(id='1' AND ((address='1' AND lang='zig')))"
     );
   });
 
@@ -26,7 +26,7 @@ describe("object cases", () => {
       },
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (((address='1') OR (lang='zig'))))"
+      "(id='1' AND ((address='1' OR lang='zig')))"
     );
   });
 
@@ -40,7 +40,8 @@ describe("object cases", () => {
       },
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (((code in ('1', '2', '3')) OR (select age from Person where code in ('1', '2')))))"
+      // 
+      "(id='1' AND ((code in ('1', '2', '3') OR select age from Person where code in ('1', '2'))))"
     );
   });
 });
@@ -53,7 +54,7 @@ describe("array cases", () => {
   test("字符串数组默认使用 AND 拼接", () => {
     const criterias = [`id='1'`, `name='张三'`];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (name='张三'))"
+      "(id='1' AND name='张三')"
     );
   });
 
@@ -65,7 +66,7 @@ describe("array cases", () => {
       [`age='1'`, `address='1'`],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (name='张三') AND ((age='1') AND (address='1')))"
+      "(id='1' AND name='张三' AND (age='1' AND address='1'))"
     );
   });
 
@@ -78,14 +79,14 @@ describe("array cases", () => {
       },
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (name='张三') AND (((a in ()))))"
+      "(id='1' AND name='张三' AND ((a in ())))"
     );
   });
 
   test("数组设置默认操作符 OR 或 AND", () => {
     const criterias = ["OR", "quantity = 0", "productId is null"];
     expect(criteriaToString(criterias)).toBe(
-      "((quantity = 0) OR (productId is null))"
+      "(quantity = 0 OR productId is null)"
     );
   });
 
@@ -104,7 +105,7 @@ describe("array cases", () => {
       ],
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((((quantity = 0) OR (productId is null)) AND (abs(originInvoiceAmount) > abs(originRcAmount))) OR ((quantity != 0) AND (productId is not null) AND (abs(invoiceQuantity) > abs(rcQuantity))))"
+      "(((quantity = 0 OR productId is null) AND abs(originInvoiceAmount) > abs(originRcAmount)) OR (quantity != 0 AND productId is not null AND abs(invoiceQuantity) > abs(rcQuantity)))"
     );
   });
 
@@ -132,7 +133,7 @@ describe("string cases", () => {
   test("剔除数组中字符串首尾空格", () => {
     const criterias = [` id='1'`, `  name='张三' `];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (name='张三'))"
+      "(id='1' AND name='张三')"
     );
   });
 
@@ -147,7 +148,7 @@ describe("string cases", () => {
     `,
     ];
     expect(criteriaToString(criterias)).toBe(
-      "((id='1') AND (name='张三') AND (id in (select age from Person where (code in ('1', '2')))))"
+      "(id='1' AND name='张三' AND id in (select age from Person where (code in ('1', '2'))))"
     );
   });
 });
