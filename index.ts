@@ -53,6 +53,10 @@ export type Criteria = undefined | null | string | ObjectCriteria | Criteria[];
  * ```
  */
 export function criteriaToString(criterias: Criteria): string {
+  if (!Array.isArray(criterias) && typeof criterias === "object" && criterias) {
+    return makeObjectCritera(criterias);
+  }
+
   if (!Array.isArray(criterias) || !criterias.length) {
     return "";
   }
